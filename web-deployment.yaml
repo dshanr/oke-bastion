@@ -1,0 +1,49 @@
+
+################################
+#           WEB APP            #
+################################
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: streaming
+  name: streaming-svc
+spec:
+  selector:
+    app: oci-streaming
+  ports:
+    - name: http
+      port: 8111
+      targetPort: 8888
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oci-streaming
+  namespace: streaming
+  labels:
+    app: oci-streaming
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: oci-streaming
+  template:
+    metadata:
+      labels:
+        app: oci-streaming
+    spec:
+      containers:
+        - name: oci-streaming
+          image: iad.ocir.io/idwgixatfchl/cards-dev-pci/oci-streaming/oci-streaming:latest
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8111
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "256Mi"
+      imagePullSecrets:
+        - name: ocirsecret
+
