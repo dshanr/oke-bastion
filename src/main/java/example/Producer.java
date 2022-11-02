@@ -9,12 +9,15 @@ import java.util.Properties;
 
 public class Producer {
 
-    static String bootstrapServers = "cell-1.streaming.us-ashburn-1.oci.oraclecloud.com:9092";
+    static String bootstrapServers = "5mqywrhsxdwq.streaming.us-ashburn-1.oci.oraclecloud.com:9092";
     static String tenancyName = "oftprism";
     static String username = "shan.duraipandian@oracle.com";
-    static String streamPoolId = "ocid1.streampool.oc1.iad.amaaaaaa4nuaawaa72i3titgycuhdbstjrw5se4liprqov47nik6jgxvfa3a";
+    //Public Stream Pool
+    //static String streamPoolId = "ocid1.streampool.oc1.iad.amaaaaaa4nuaawaa72i3titgycuhdbstjrw5se4liprqov47nik6jgxvfa3a";
+    static String streamPoolId = "ocid1.streampool.oc1.iad.amaaaaaa4nuaawaaqz7n5rvjjzmvjatpc4yalg6ammfp7jd75mqywrhsxdwq";
+
     static String authToken = "kk.P3CmiOHG4D5KL2<e<"; // from step 8 of Prerequisites section
-    static String streamOrKafkaTopicName = "cyc-cards-test-stream"; // from step 2 of Prerequisites section
+    static String streamOrKafkaTopicName = "cards-dev-pci-stream"; // from step 2 of Prerequisites section
 
     private static Properties getKafkaProperties() {
         Properties properties = new Properties();
@@ -45,7 +48,8 @@ public class Producer {
                 ProducerRecord<String, String> record = new ProducerRecord<>(streamOrKafkaTopicName, "message-key" + i, "message-value" + i);
                 producer.send(record, (md, ex) -> {
                     if (ex != null) {
-                        System.err.println("exception occurred in producer for review :" + record.value()
+                        System.out.println("****************Producer Error:*******************");
+                        System.err.println("***************exception occurred in producer for review :" + record.value()
                                 + ", exception is " + ex);
                         ex.printStackTrace();
                     } else {
@@ -53,6 +57,7 @@ public class Producer {
                     }
                 });
             }
+
             // producer.send() is async, to make sure all messages are sent we use producer.flush()
             producer.flush();
             producer.close();

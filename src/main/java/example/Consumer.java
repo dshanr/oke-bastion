@@ -4,20 +4,22 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerRecord;
+
 
 import java.util.Collections;
 import java.util.Properties;
 
 public class Consumer {
 
-    static String bootstrapServers = "cell-1.streaming.us-ashburn-1.oci.oraclecloud.com:9092";
+    static String bootstrapServers = "5mqywrhsxdwq.streaming.us-ashburn-1.oci.oraclecloud.com:9092";
     static String tenancyName = "oftprism";
     static String username = "shan.duraipandian@oracle.com";
-    static String streamPoolId = "ocid1.streampool.oc1.iad.amaaaaaa4nuaawaa72i3titgycuhdbstjrw5se4liprqov47nik6jgxvfa3a";
+
+    //Public Stream Pool
+    //static String streamPoolId = "ocid1.streampool.oc1.iad.amaaaaaa4nuaawaa72i3titgycuhdbstjrw5se4liprqov47nik6jgxvfa3a";
+    static String streamPoolId = "ocid1.streampool.oc1.iad.amaaaaaa4nuaawaaqz7n5rvjjzmvjatpc4yalg6ammfp7jd75mqywrhsxdwq";
     static String authToken = "kk.P3CmiOHG4D5KL2<e<"; // from step 8 of Prerequisites section
-    static String streamOrKafkaTopicName = "cyc-cards-test-stream"; // from step 2 of Prerequisites section
+    static String streamOrKafkaTopicName = "cards-dev-pci-stream"; // from step 2 of Prerequisites section
 
     static String consumerGroupName = "oss-test-consumer-group";
 
@@ -44,8 +46,8 @@ public class Consumer {
         return props;
     }
 
-    public void consume(){
-        final KafkaConsumer<Integer, String> consumer = new KafkaConsumer<>(getKafkaProperties());;
+    public int consume(){
+        final KafkaConsumer<Integer, String> consumer = new KafkaConsumer<>(getKafkaProperties());
         consumer.subscribe(Collections.singletonList(streamOrKafkaTopicName));
         ConsumerRecords<Integer, String> records = consumer.poll(10000);
 
@@ -56,6 +58,8 @@ public class Consumer {
 
         consumer.commitSync();
         consumer.close();
+
+        return records.count();
     }
 
     public static void main(String[] args) {
