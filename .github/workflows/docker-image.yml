@@ -17,3 +17,12 @@ jobs:
         run: mvn --batch-mode --update-snapshots package
       - name: Build Docker Image
         run: docker build . --file Dockerfile --tag iad.ocir.io/idwgixatfchl/cards-dev-pci/oci-streaming/oci-streaming:latest
+      - uses: mr-smithers-excellent/docker-build-push@v5
+        name: Build & push Docker image
+        with:
+          image: iad.ocir.io/idwgixatfchl/cards-dev-pci/oci-streaming/oci-streaming
+          tags: v1, latest
+          registry: iad.ocir.io
+          dockerfile: Dockerfile
+          username: ${{ secrets.OCIR_USER }}
+          password: ${{ secrets.OCIR_PWD }}
