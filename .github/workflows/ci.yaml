@@ -58,8 +58,8 @@ jobs:
           cat ~/.ssh/id_rsa.pub | tr -d '\n' > ~/.ssh/id_rsa_updated.pub
           export ssh_public_key="~/.ssh/id_rsa_updated.pub"
           export private_key="~/.ssh/id_rsa"
-          echo $private_key
-          echo $ssh_public_key
+          cat ~/.ssh/id_rsa.pub          
+          cat ~/.ssh/id_rsa
 
           echo "Host ${{ secrets.BASTION_HOST }}" >> ~/.ssh/config
           echo "    IdentityFile ~/.ssh/id_rsa" >> ~/.ssh/config
