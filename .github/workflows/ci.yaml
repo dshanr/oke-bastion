@@ -72,15 +72,15 @@ jobs:
 
       - name: Create Bastion Session
         run: |
-          echo "---------------------------------------------------------------"
-          echo "Creating OCI Bastion Session"
-          echo "---------------------------------------------------------------"
-          echo ${{ vars.OKE_CLUSTER_OCID }}
           export oke_cluster_private_ip=`oci ce cluster get --cluster-id ${{ vars.OKE_CLUSTER_OCID }} | grep -i -A 1 "private-endpoint" | grep -E -o "([0-9]{1,3}[\.]){3}[0-9]{1,3}"`
-          echo "OKE Private IP:$oke_cluster_private_ip"
+          echo $oke_cluster_private_ip
           oci bastion session create-port-forwarding --bastion-id ${{ secrets.BASTION_OCID }} --display-name ga-to-oke-tunnel --ssh-public-key-file ~/.ssh/id_rsa_updated.pub --key-type PUB --target-private-ip $oke_cluster_private_ip --target-port 6443 --wait-for-state SUCCEEDED > ~/bastion_session.json
           export bastion_session_ocid=`cat ~/bastion_session.json | grep bastionsession | awk '{print $2}' | tail -1 | tr -d '"'`
           echo $bastion_session_ocid
+        id: bastion
+        outputs:
+          oke_cluster_private_ip: ${{ steps.bastion.outputs.oke_cluster_private_ip }}
+          bastion_session_ocid: ${{ steps.bastion.outputs.bastion_session_ocid }}
 
       - name: Install kubectl
         run: |
@@ -90,20 +90,20 @@ jobs:
 
       - name: Start SSH Tunnel to OKE Cluster
         run: |
-          echo "ssh -i ~/.ssh/id_rsa -fN -L 6443:$oke_cluster_private_ip:6443 -p 22 $bastion_session_ocid@${{ secrets.BASTION_HOST }} -v > ~/id_rsa.out"
-          ssh -i ~/.ssh/id_rsa -fN -L 6443:$oke_cluster_private_ip:6443 -p 22 $bastion_session_ocid@${{ secrets.BASTION_HOST }} -v > ~/id_rsa.out
+          echo "ssh -i ~/.ssh/id_rsa -fN -L 6443:${{ steps.bastion.outputs.oke_cluster_private_ip }}:6443 -p 22 $${{ steps.bastion.outputs.bastion_session_ocid }}@${{ secrets.BASTION_HOST }} -v > ~/id_rsa.out"
+          ssh -i ~/.ssh/id_rsa -fN -L 6443:${{ steps.bastion.outputs.oke_cluster_private_ip }}:6443 -p 22 ${{ steps.bastion.outputs.bastion_session_ocid }}@${{ secrets.BASTION_HOST }} -v > ~/id_rsa.out
           while [ $? != 0 ]
           do
           echo "---------------------------------------------------------------"
           echo "Attempting again"
           echo "---------------------------------------------------------------"
-          ssh -i ~/.ssh/id_rsa -fN -L 6443:$oke_cluster_private_ip:6443 -p 22 $bastion_session_ocid@${{ secrets.BASTION_HOST }} -v > ~/id_rsa.out
+          ssh -i ~/.ssh/id_rsa -fN -L 6443:${{ steps.bastion.outputs.oke_cluster_private_ip }}:6443 -p 22 ${{ steps.bastion.outputs.bastion_session_ocid }}@${{ secrets.BASTION_HOST }} -v > ~/id_rsa.out
           done
 
       - name: Configure OKE Cluster
         run: |
-          oci ce cluster create-kubeconfig --cluster-id $oci_cluster_ocid --file $HOME/.kube/config --region ${{ secrets.OCI_CLI_REGION }} --token-version 2.0.0  --kube-endpoint PRIVATE_ENDPOINT
-          sed -i "s|$oke_cluster_private_ip|127.0.0.1|g" $HOME/.kube/config
+          oci ce cluster create-kubeconfig --cluster-id ${{ vars.OKE_CLUSTER_OCID }} --file $HOME/.kube/config --region ${{ secrets.OCI_CLI_REGION }} --token-version 2.0.0  --kube-endpoint PRIVATE_ENDPOINT
+          sed -i "s|${{ steps.bastion.outputs.oke_cluster_private_ip }}|127.0.0.1|g" $HOME/.kube/config
           kubectl cluster-info
           if [ $? == 0 ]
           then
