@@ -66,10 +66,12 @@ jobs:
           echo "Host ${{ secrets.BASTION_HOST }}" >> ~/.ssh/config
           echo "    IdentityFile ~/.ssh/id_rsa" >> ~/.ssh/config
           echo "    HostkeyAlgorithms +ssh-rsa" >> ~/.ssh/config
+          echo "    PubkeyAcceptedAlgorithms +ssh-rsa" >> ~/.ssh/config
           echo "    StrictHostKeyChecking no" >> ~/.ssh/config
           echo "Host *" >> ~/.ssh/config
           echo "    IdentityFile ~/.ssh/id_rsa" >> ~/.ssh/config
           echo "    HostkeyAlgorithms +ssh-rsa" >> ~/.ssh/config
+          echo "    PubkeyAcceptedAlgorithms +ssh-rsa" >> ~/.ssh/config
           echo "    StrictHostKeyChecking no" >> ~/.ssh/config
 
       - name: Create Bastion Session
