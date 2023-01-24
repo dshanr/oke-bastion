@@ -33,3 +33,20 @@ jobs:
           docker build --tag=oci-streaming:latest .
           docker tag "oci-streaming:latest" sjc.ocir.io/axwgkpue2ufo/ocilabs/streaming:latest
           docker push sjc.ocir.io/axwgkpue2ufo/ocilabs/streaming:latest
+
+      - name: Install OCI CLI
+        run: |
+          curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
+          chmod +x install.sh
+          ./install.sh --accept-all-defaults
+          mv ~/bin/oci /usr/local/bin
+          oci --version
+          oci os ns get
+          oci setup repair-file-permissions --file ~/.oci/config
+          oci setup repair-file-permissions --file ~/.oci/key.pem
+
+      - name: Setup SSH
+        run: |
+          echo "${{ secrets.BASTION_PRIVATE_KEY }}" > bastion_private_key
+          chmod 600 bastion_private_key
+          ssh-keyscan -H ${{ secrets.BASTION_HOST }} >> ~/.ssh/known_hosts
