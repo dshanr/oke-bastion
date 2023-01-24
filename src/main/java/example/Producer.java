@@ -9,15 +9,15 @@ import java.util.Properties;
 
 public class Producer {
 
-    static String bootstrapServers = "5mqywrhsxdwq.streaming.us-ashburn-1.oci.oraclecloud.com:9092";
-    static String tenancyName = "oftprism";
-    static String username = "shan.duraipandian@oracle.com";
+    static String bootstrapServers = "cell-1.streaming.us-sanjose-1.oci.oraclecloud.com:9092";
+    static String tenancyName = "dshan";
+    static String username = "dsraja79@yahoo.com";
     //Public Stream Pool
     //static String streamPoolId = "ocid1.streampool.oc1.iad.amaaaaaa4nuaawaa72i3titgycuhdbstjrw5se4liprqov47nik6jgxvfa3a";
-    static String streamPoolId = "ocid1.streampool.oc1.iad.amaaaaaa4nuaawaaqz7n5rvjjzmvjatpc4yalg6ammfp7jd75mqywrhsxdwq";
+    static String streamPoolId = "ocid1.streampool.oc1.us-sanjose-1.amaaaaaa2e3hxrqasmcgsqo7ntcktbl32w537hmf6ecydo4zkiw2zxffe7dq";
 
-    static String authToken = "kk.P3CmiOHG4D5KL2<e<"; // from step 8 of Prerequisites section
-    static String streamOrKafkaTopicName = "cards-dev-pci-stream"; // from step 2 of Prerequisites section
+    static String authToken = "pT>TC5yfAx5.yKnYgJ7s"; // from step 8 of Prerequisites section
+    static String streamOrKafkaTopicName = "ocilabs-stream"; // from step 2 of Prerequisites section
 
     private static Properties getKafkaProperties() {
         Properties properties = new Properties();

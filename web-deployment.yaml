@@ -35,7 +35,7 @@ spec:
     spec:
       containers:
         - name: oci-streaming
-          image: iad.ocir.io/idwgixatfchl/cards-dev-pci/oci-streaming/oci-streaming:latest
+          image: sjc.ocir.io/axwgkpue2ufo/ocilabs/streaming:latest
           imagePullPolicy: Always
           ports:
             - name: http
