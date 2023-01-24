@@ -113,3 +113,12 @@ jobs:
             echo "Unable to Authenticate with Private OKE Cluster"
             echo "---------------------------------------------------------------"
           fi
+
+      - name: Delete OCI Bastion Session
+        run: |
+          sleep 5
+          echo "---------------------------------------------------------------"
+          echo "Deleting OCI Bastion Session"
+          echo "---------------------------------------------------------------"
+          export bastion_session_ocid=`cat ~/bastion_session.json | grep bastionsession | awk '{print $2}' | tail -1 | tr -d '"'`
+          oci bastion session delete --session-id $bastion_session_ocid --force      
