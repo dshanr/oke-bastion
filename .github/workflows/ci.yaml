@@ -76,10 +76,9 @@ jobs:
           echo $oke_cluster_private_ip
           echo "oke_cluster_private_ip=$oke_cluster_private_ip" >> $GITHUB_ENV
           oci bastion session create-port-forwarding --bastion-id ${{ secrets.BASTION_OCID }} --display-name ga-to-oke-tunnel --ssh-public-key-file ~/.ssh/id_rsa_updated.pub --key-type PUB --target-private-ip $oke_cluster_private_ip --target-port 6443 --wait-for-state SUCCEEDED > ~/bastion_session.json
-          export bastion_session_ocid=`cat ~/bastion_session.json | grep bastionsession | awk '{print $2}' | tail -1 | tr -d '"'`
-          echo "bastion_session_ocid=$bastion_session_ocid" >> $GITHUB_ENV
+          export bastion_session_ocid=`cat ~/bastion_session.json | grep bastionsession | awk '{print $2}' | tail -1 | tr -d '"'`          
           echo $bastion_session_ocid
-        id: bastion
+          echo "bastion_session_ocid=$bastion_session_ocid" >> $GITHUB_ENV
 
       - name: Install kubectl
         run: |
@@ -89,7 +88,7 @@ jobs:
 
       - name: Start SSH Tunnel to OKE Cluster
         run: |
-          echo "ssh -i ~/.ssh/id_rsa -fN -L 6443:${{ env.oke_cluster_private_ip }}:6443 -p 22 $${{ env.bastion_session_ocid }}@${{ secrets.BASTION_HOST }} -v > ~/id_rsa.out"
+          echo "ssh -i ~/.ssh/id_rsa -fN -L 6443:${{ env.oke_cluster_private_ip }}:6443 -p 22 ${{ env.bastion_session_ocid }}@${{ secrets.BASTION_HOST }} -v > ~/id_rsa.out"
           ssh -i ~/.ssh/id_rsa -fN -L 6443:${{ env.oke_cluster_private_ip }}:6443 -p 22 ${{ env.bastion_session_ocid }}@${{ secrets.BASTION_HOST }} -v > ~/id_rsa.out
           while [ $? != 0 ]
           do
