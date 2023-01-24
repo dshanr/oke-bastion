@@ -20,7 +20,7 @@ jobs:
         with:
           image: sjc.ocir.io/axwgkpue2ufo/ocilabs/streaming
           tags: latest
-          registry: iad.ocir.io
+          registry: sjc.ocir.io
           dockerfile: Dockerfile
           username: ${{ secrets.OCIR_USER }}
           password: ${{ secrets.OCIR_PWD }}
