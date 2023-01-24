@@ -43,7 +43,30 @@ jobs:
           oci --version
 
       - name: Setup SSH
-        run: |
-          echo "${{ secrets.BASTION_PRIVATE_KEY }}" > bastion_private_key
-          chmod 600 bastion_private_key
+        run: |                    
+          echo "---------------------------------------------------------------"
+          echo "Configure SSH Tunnel to OKE Cluster"
+          echo "---------------------------------------------------------------"
+
+          rm -rf ~/.ssh/config
+          rm -rf ~/.ssh/id_rsa*
+          rm -rf ~/.ssh/known_hosts
+          ssh-keygen -b 2048 -t rsa -f ~/.ssh/id_rsa -q -N ""
           ssh-keyscan -H ${{ secrets.BASTION_HOST }} >> ~/.ssh/known_hosts
+
+
+          cat ~/.ssh/id_rsa.pub | tr -d '\n' > ~/.ssh/id_rsa_updated.pub
+          export ssh_public_key="~/.ssh/id_rsa_updated.pub"
+          export private_key="~/.ssh/id_rsa"
+          echo $private_key
+          echo $ssh_public_key
+
+          echo "Host ${{ secrets.BASTION_HOST }}" >> ~/.ssh/config
+          echo "    IdentityFile ~/.ssh/id_rsa" >> ~/.ssh/config
+          echo "    HostkeyAlgorithms +ssh-rsa" >> ~/.ssh/config
+          echo "    StrictHostKeyChecking no" >> ~/.ssh/config
+          echo "Host *" >> ~/.ssh/config
+          echo "    IdentityFile ~/.ssh/id_rsa" >> ~/.ssh/config
+          echo "    HostkeyAlgorithms +ssh-rsa" >> ~/.ssh/config
+          echo "    StrictHostKeyChecking no" >> ~/.ssh/config
+
