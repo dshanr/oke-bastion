@@ -119,6 +119,7 @@ jobs:
       - name: Deploy to OKE
         run: |
           ls -l
+          kubectl get ns | grep -c "^streaming " || kubectl create namespace streaming
           kubectl apply -f web-deployment.yaml
 
       - name: Delete OCI Bastion Session
