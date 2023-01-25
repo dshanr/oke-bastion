@@ -50,8 +50,12 @@ jobs:
 
           ssh-keygen -b 2048 -t rsa -f ~/.ssh/id_rsa -q -N ""
           ssh-keyscan -H ${{ secrets.BASTION_HOST }} >> ~/.ssh/known_hosts
-  
-          echo "Host host.bastion.us-sanjose-1.oci.oraclecloud.com" >> ~/.ssh/config
+
+          cat ~/.ssh/id_rsa.pub | tr -d '\n' > ~/.ssh/id_rsa_updated.pub
+          export ssh_public_key="~/.ssh/id_rsa_updated.pub"
+          export private_key="~/.ssh/id_rsa"
+          
+          echo "Host ${{ secrets.BASTION_HOST }}" >> ~/.ssh/config
           echo "    IdentityFile ~/.ssh/id_rsa" >> ~/.ssh/config
           echo "    HostkeyAlgorithms +ssh-rsa" >> ~/.ssh/config
           echo "    StrictHostKeyChecking no" >> ~/.ssh/config
@@ -66,7 +70,7 @@ jobs:
         run: |
           export oke_private_ip=`oci ce cluster get --cluster-id ${{ vars.OKE_CLUSTER_OCID }} | grep -i -A 1 "private-endpoint" | grep -E -o "([0-9]{1,3}[\.]){3}[0-9]{1,3}"`
           echo "oke_private_ip=$oke_private_ip" >> $GITHUB_ENV
-          oci bastion session create-port-forwarding --bastion-id ${{ secrets.BASTION_OCID }} --display-name ga-to-oke-tunnel --ssh-public-key-file ~/.ssh/id_rsa.pub --key-type PUB --target-private-ip $oke_private_ip --target-port 6443 --wait-for-state SUCCEEDED > ~/bastion_session.json
+          oci bastion session create-port-forwarding --bastion-id ${{ secrets.BASTION_OCID }} --display-name ga-to-oke-tunnel --ssh-public-key-file ~/.ssh/id_rsa_updated.pub --key-type PUB --target-private-ip $oke_private_ip --target-port 6443 --wait-for-state SUCCEEDED > ~/bastion_session.json
           export bastion_session_ocid=`cat ~/bastion_session.json | grep bastionsession | awk '{print $2}' | tail -1 | tr -d '"'`          
           echo "bastion_session_ocid=$bastion_session_ocid" >> $GITHUB_ENV
 
