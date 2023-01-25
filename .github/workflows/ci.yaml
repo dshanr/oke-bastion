@@ -48,6 +48,9 @@ jobs:
           echo "Configure SSH Tunnel to OKE Cluster"
           echo "---------------------------------------------------------------"
 
+          rm -rf ~/.ssh/config
+          rm -rf ~/.ssh/id_rsa*
+          rm -rf ~/.ssh/known_hosts
           ssh-keygen -b 2048 -t rsa -f ~/.ssh/id_rsa -q -N ""
           ssh-keyscan -H ${{ secrets.BASTION_HOST }} >> ~/.ssh/known_hosts
 
