@@ -115,6 +115,11 @@ jobs:
             echo "---------------------------------------------------------------"
           fi
 
+      - name: Deploy to OKE
+        run: |
+          ls -l
+          kubectl apply -f web-deployment.yaml
+
       - name: Delete OCI Bastion Session
         run: |
           sleep 5
