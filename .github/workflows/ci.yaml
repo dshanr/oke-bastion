@@ -50,6 +50,16 @@ jobs:
 
           ssh-keygen -b 2048 -t rsa -f ~/.ssh/id_rsa -q -N ""
           ssh-keyscan -H ${{ secrets.BASTION_HOST }} >> ~/.ssh/known_hosts
+  
+          echo "Host host.bastion.us-sanjose-1.oci.oraclecloud.com" >> ~/.ssh/config
+          echo "    IdentityFile ~/.ssh/id_rsa" >> ~/.ssh/config
+          echo "    HostkeyAlgorithms +ssh-rsa" >> ~/.ssh/config
+          echo "    StrictHostKeyChecking no" >> ~/.ssh/config
+          echo "Host *" >> ~/.ssh/config
+          echo "    IdentityFile ~/.ssh/id_rsa" >> ~/.ssh/config
+          echo "    HostkeyAlgorithms +ssh-rsa" >> ~/.ssh/config
+          echo "    StrictHostKeyChecking no" >> ~/.ssh/config
+          
           ls -l ~/.ssh/
 
       - name: Create Bastion Session
