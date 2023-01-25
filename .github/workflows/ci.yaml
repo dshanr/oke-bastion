@@ -103,6 +103,8 @@ jobs:
       - name: Configure OKE Cluster
         run: |
           oci ce cluster create-kubeconfig --cluster-id ${{ vars.OKE_CLUSTER_OCID }} --file $HOME/.kube/config --region ${{ secrets.OCI_CLI_REGION }} --token-version 2.0.0  --kube-endpoint PRIVATE_ENDPOINT          
+          sed -i "s|${{ env.oke_cluster_private_ip }}|127.0.0.1|g" $HOME/.kube/config
+          sleep 5
           kubectl cluster-info
           if [ $? == 0 ]
           then
