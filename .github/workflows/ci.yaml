@@ -48,9 +48,6 @@ jobs:
           echo "Configure SSH Tunnel to OKE Cluster"
           echo "---------------------------------------------------------------"
 
-          rm -rf ~/.ssh/config
-          rm -rf ~/.ssh/id_rsa*
-          rm -rf ~/.ssh/known_hosts
           ssh-keygen -b 2048 -t rsa -f ~/.ssh/id_rsa -q -N ""
           ssh-keyscan -H ${{ secrets.BASTION_HOST }} >> ~/.ssh/known_hosts
 
@@ -73,12 +70,10 @@ jobs:
 
       - name: Create Bastion Session
         run: |
-          export oke_cluster_private_ip=`oci ce cluster get --cluster-id ${{ vars.OKE_CLUSTER_OCID }} | grep -i -A 1 "private-endpoint" | grep -E -o "([0-9]{1,3}[\.]){3}[0-9]{1,3}"`
-          echo $oke_cluster_private_ip
-          echo "oke_cluster_private_ip=$oke_cluster_private_ip" >> $GITHUB_ENV
-          oci bastion session create-port-forwarding --bastion-id ${{ secrets.BASTION_OCID }} --display-name ga-to-oke-tunnel --ssh-public-key-file ~/.ssh/id_rsa_updated.pub --key-type PUB --target-private-ip $oke_cluster_private_ip --target-port 6443 --wait-for-state SUCCEEDED > ~/bastion_session.json
+          export oke_private_ip=`oci ce cluster get --cluster-id ${{ vars.OKE_CLUSTER_OCID }} | grep -i -A 1 "private-endpoint" | grep -E -o "([0-9]{1,3}[\.]){3}[0-9]{1,3}"`
+          echo "oke_private_ip=$oke_private_ip" >> $GITHUB_ENV
+          oci bastion session create-port-forwarding --bastion-id ${{ secrets.BASTION_OCID }} --display-name ga-to-oke-tunnel --ssh-public-key-file ~/.ssh/id_rsa_updated.pub --key-type PUB --target-private-ip $oke_private_ip --target-port 6443 --wait-for-state SUCCEEDED > ~/bastion_session.json
           export bastion_session_ocid=`cat ~/bastion_session.json | grep bastionsession | awk '{print $2}' | tail -1 | tr -d '"'`          
-          echo $bastion_session_ocid
           echo "bastion_session_ocid=$bastion_session_ocid" >> $GITHUB_ENV
 
       - name: Install kubectl
@@ -88,21 +83,20 @@ jobs:
           sudo mv kubectl /usr/local/bin
 
       - name: Start SSH Tunnel to OKE Cluster
-        run: |
-          echo "ssh -i ~/.ssh/id_rsa -fN -L 6443:${{ env.oke_cluster_private_ip }}:6443 -p 22 ${{ env.bastion_session_ocid }}@${{ secrets.BASTION_HOST }} -v > ~/id_rsa.out"
-          ssh -i ~/.ssh/id_rsa -fN -L 6443:${{ env.oke_cluster_private_ip }}:6443 -p 22 ${{ env.bastion_session_ocid }}@${{ secrets.BASTION_HOST }} -v > ~/id_rsa.out
+        run: |          
+          ssh -i ~/.ssh/id_rsa -fN -L 6443:${{ env.oke_private_ip }}:6443 -p 22 ${{ env.bastion_session_ocid }}@${{ secrets.BASTION_HOST }} -v 
           while [ $? != 0 ]
           do
           echo "---------------------------------------------------------------"
           echo "Attempting again"
           echo "---------------------------------------------------------------"
-          ssh -i ~/.ssh/id_rsa -fN -L 6443:${{ env.oke_cluster_private_ip }}:6443 -p 22 ${{ env.bastion_session_ocid }}@${{ secrets.BASTION_HOST }} -v > ~/id_rsa.out
+          ssh -i ~/.ssh/id_rsa -fN -L 6443:${{ env.oke_private_ip }}:6443 -p 22 ${{ env.bastion_session_ocid }}@${{ secrets.BASTION_HOST }} -v 
           done
 
       - name: Configure OKE Cluster
         run: |
           oci ce cluster create-kubeconfig --cluster-id ${{ vars.OKE_CLUSTER_OCID }} --file $HOME/.kube/config --region ${{ secrets.OCI_CLI_REGION }} --token-version 2.0.0  --kube-endpoint PRIVATE_ENDPOINT          
-          sed -i "s|${{ env.oke_cluster_private_ip }}|127.0.0.1|g" $HOME/.kube/config
+          sed -i "s|${{ env.oke_private_ip }}|127.0.0.1|g" $HOME/.kube/config
           sleep 5
           kubectl cluster-info
           if [ $? == 0 ]
@@ -119,7 +113,7 @@ jobs:
       - name: Deploy to OKE
         run: |
           ls -l
-          kubectl get ns | grep -c "^streaming " || kubectl create namespace streaming
+          kubectl get ns | grep -c "^streaming" || kubectl create namespace streaming
           kubectl apply -f web-deployment.yaml
 
       - name: Delete OCI Bastion Session
