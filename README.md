@@ -36,6 +36,17 @@ In this example, the deployment process to a private OKE cluster is facilitated 
 ## Configuration
 
 1. __Github Repository Secrets & Variables__ -  Please ensure that the following secrets are properly configured with the relevant values according to your specific setup. You can set up secrets by navigating from your repository -> Settings --> Secrets and Variables --> Actions
+    e.g
+    ```
+    BASTION_HOST - host.bastion.us-ashburn-1.oci.oraclecloud.com
+    BASTION_OCID - ocid1.bastionsession.oc1.iad._______tg4xoxcetwov7p6nwsfhq5drxyqoize7x35hdboq
+    OCI_AUTH_TOKEN - TLPfxey6q-L>wAxxxd3d
+    OCI_CLI_FINGERPRINT - 41:4c:da:51:fe:26:7d:2a:e7:dd:83:ba:7d:49:8d:04
+    OCI_CLI_KEY_CONTENT - Copy the private key file conetnt here
+    OCI_CLI_REGION - us-ashburn-1
+    OCI_CLI_TENANCY - ocid1.tenancy.oc1..aa____plkmid2untpzjcxrmbv4nowe74yb4lr6idtckwo4wyf7jh23be4q
+    OCI_CLI_USER - ocid1.user.oc1..aaa____lh7itlkx5ersopnkybww3rt3gymelaxftmofky6it6mtjmcz6w4q
+    ```
 ![Repo Secrets](./images/repo_secrets.png)
 ![Repo Variables](./images/repo_variables.png)
 
