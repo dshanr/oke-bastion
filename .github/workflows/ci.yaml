@@ -90,7 +90,7 @@ jobs:
         run: |
           ls -l
           kubectl get ns | grep -c "^nginx" || kubectl create namespace nginx
-          kubectl create -f https://k8s.io/examples/application/deployment.yaml
+          kubectl apply -f https://k8s.io/examples/application/deployment.yaml
 
       - name: Delete OCI Bastion Session
         run: |
