@@ -35,14 +35,14 @@ In this example, the deployment process to a private OKE cluster is facilitated 
 
 ## Configuration
 
-1. Github Repository Secrets & Variables -  Please ensure that the following secrets are properly configured with the relevant values according to your specific setup. You can set up secrets by navigating from your repository -> Settings --> Secrets and Variables --> Actions
+1. __Github Repository Secrets & Variables__ -  Please ensure that the following secrets are properly configured with the relevant values according to your specific setup. You can set up secrets by navigating from your repository -> Settings --> Secrets and Variables --> Actions
 ![Repo Secrets](./images/repo_secrets.png)
 ![Repo Variables](./images/repo_variables.png)
 
-2. OKE Cluster
+2. __OKE Cluster__
 ![Repo Secrets](./images/oke.png)
 
-3. Bastion
+3. __Bastion__
 ![Repo Secrets](./images/bastion.png)
 
 ## Deploy and Run
