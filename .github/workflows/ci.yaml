@@ -4,14 +4,21 @@ on: [push]
 
 jobs:
   deploy:   
-    runs-on: self-hosted
+    runs-on: ubuntu-20.04
     env:
       OCI_CLI_USER: ${{ secrets.OCI_CLI_USER }}
       OCI_CLI_TENANCY: ${{ secrets.OCI_CLI_TENANCY }}
       OCI_CLI_FINGERPRINT: ${{ secrets.OCI_CLI_FINGERPRINT }}
       OCI_CLI_KEY_CONTENT: ${{ secrets.OCI_CLI_KEY_CONTENT }}
       OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
-    steps:     
+    steps:
+      - name: Install OCI CLI
+        run: |
+          curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
+          chmod +x install.sh
+          ./install.sh --accept-all-defaults
+          mv ~/bin/oci /usr/local/bin
+          oci --version     
       - name: Setup SSH
         run: |                    
           echo "---------------------------------------------------------------"
