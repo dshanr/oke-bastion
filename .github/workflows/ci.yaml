@@ -15,20 +15,27 @@ jobs:
       OCI_CLI_KEY_CONTENT: ${{ secrets.OCI_CLI_KEY_CONTENT }}
       OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
     steps:
-      - name: Install OCI CLI
-        run: |
-          curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
-          chmod +x install.sh
-          ./install.sh --accept-all-defaults
-          mv ~/bin/oci /usr/local/bin
-          oci --version     
+      - name: Check OCI CLI installation
+        run: |  
+          if ! command -v oci &> /dev/null; then
+            echo "OCI CLI not found, installing..."
+            # Continue with the installation steps
+            curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
+            chmod +x install.sh
+            ./install.sh --accept-all-defaults
+            mv ~/bin/oci /usr/local/bin
+            oci --version 
+          else
+            echo "OCI CLI already installed"
+          fi
+        
       - name: Setup SSH
         run: |                    
           echo "---------------------------------------------------------------"
           echo "Configure SSH Tunnel to OKE Cluster"
           echo "---------------------------------------------------------------"
 
-          ssh-keygen -b 2048 -t rsa -f ~/.ssh/id_rsa -q -N ""
+          ssh-keygen -b 2048 -t rsa -f ~/.ssh/id_rsa -q -N "" -y
           ssh-keyscan -H ${{ secrets.BASTION_HOST }} >> ~/.ssh/known_hosts
 
           cat ~/.ssh/id_rsa.pub | tr -d '\n' > ~/.ssh/id_rsa_updated.pub
