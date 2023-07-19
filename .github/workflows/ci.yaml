@@ -3,8 +3,8 @@ name: CI - Deploy to OKE
 on: [push]
 
 jobs:
-  deploy:
-    runs-on: ubuntu-20.04
+  deploy:   
+    runs-on: self-hosted
     env:
       OCI_CLI_USER: ${{ secrets.OCI_CLI_USER }}
       OCI_CLI_TENANCY: ${{ secrets.OCI_CLI_TENANCY }}
