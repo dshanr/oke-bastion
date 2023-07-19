@@ -41,15 +41,23 @@ jobs:
           cat ~/.ssh/id_rsa.pub | tr -d '\n' > ~/.ssh/id_rsa_updated.pub
           export ssh_public_key="~/.ssh/id_rsa_updated.pub"
           export private_key="~/.ssh/id_rsa"
-          
+          echo "" > ~/.ssh/config
           echo "Host ${{ secrets.BASTION_HOST }}" >> ~/.ssh/config
           echo "    IdentityFile ~/.ssh/id_rsa" >> ~/.ssh/config
           echo "    HostkeyAlgorithms +ssh-rsa" >> ~/.ssh/config
           echo "    StrictHostKeyChecking no" >> ~/.ssh/config
+          echo "    KexAlgorithms +diffie-hellman-group14-sha1" >> ~/.ssh/config
+          echo "    MACs +hmac-sha1" >> ~/.ssh/config
+          echo "    PubkeyAcceptedKeyTypes +ssh-rsa" >> ~/.ssh/config
+          echo "    PubkeyAcceptedAlgorithms +ssh-rsa" >> ~/.ssh/config
           echo "Host *" >> ~/.ssh/config
           echo "    IdentityFile ~/.ssh/id_rsa" >> ~/.ssh/config
           echo "    HostkeyAlgorithms +ssh-rsa" >> ~/.ssh/config
           echo "    StrictHostKeyChecking no" >> ~/.ssh/config
+          echo "    KexAlgorithms +diffie-hellman-group14-sha1" >> ~/.ssh/config
+          echo "    MACs +hmac-sha1" >> ~/.ssh/config
+          echo "    PubkeyAcceptedKeyTypes +ssh-rsa" >> ~/.ssh/config
+          echo "    PubkeyAcceptedAlgorithms +ssh-rsa" >> ~/.ssh/config
           
           ls -l ~/.ssh/
 
