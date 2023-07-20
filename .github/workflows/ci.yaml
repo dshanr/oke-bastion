@@ -22,8 +22,7 @@ jobs:
             # Continue with the installation steps
             curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
             chmod +x install.sh
-            ./install.sh --accept-all-defaults
-            mv ~/bin/oci /usr/local/bin
+            ./install.sh --accept-all-defaults            
             oci --version 
           else
             echo "OCI CLI already installed"
